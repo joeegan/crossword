@@ -21,8 +21,32 @@
 
    Crossword.prototype.initialise = function(){
       this.wordLengthChoices.push(this.size);
-      this.buildColourMapping();
+      this.colourMapping = this.merge(this.buildColourMapping(), this.buildColourMapping());
       this.colourBoard();
+   };
+
+   /**
+    * Returns a multi array where multiArrayB has been turned on it's side and merged into the multiArrayA.
+    * @param {[[]]} multiArrayA
+    * @param {[[]]} multiArrayB
+    * @returns {{[[]]}}
+    */
+   Crossword.prototype.merge = function(multiArrayA, multiArrayB) {
+      var innerLength = multiArrayA.length;
+      var arr = new Array(innerLength);
+      for (var i = 0; i < innerLength; i++) {
+         arr[i] = [];
+         for (var j =0; j < innerLength; j++) {
+            arr[i][j] = [];
+            console.log(i, j);
+            if(multiArrayA[i][j] || multiArrayB[j][i]) {
+               arr[i][j] = 1;
+            } else {
+               arr[i][j] = 0;
+            }
+         }
+      }
+      return arr;
    };
 
    /**
@@ -45,32 +69,56 @@
     */
    Crossword.prototype.buildColourMapping = function(){
       var arr = [];
-      for (var i = 0; i < Math.floor(this.size/2); i++) {
+      var startWhite = this.getRandomInt(0,1);
+      var i = startWhite;
+      var len = Math.floor(this.size/2) + i;
+      for (i; i < len; i++) {
          if (i % 2 == 0) {
             arr.push(new Array(this.size))
          } else {
-            var lineArr = [];
-            var firstWordLength = this.getRandomChoice(4,5,6,7,8,13);
-            for (var j = 0; j<firstWordLength; j++) {
-               lineArr.push(1);
-            }
-            if (firstWordLength !== this.size) {
-               lineArr.push(0);
-            }
-            var secondWordLength = this.size - 1 - firstWordLength;
-            for (var j = 0; j<secondWordLength; j++) {
-               lineArr.push(1);
-            }
-            arr.push(lineArr)
+            arr.push(this.buildLineArray());
          }
       }
-      var middleRow = new Array(this.size);
+      var middleRow = startWhite ? this.buildSymmetricalLineArray() : new Array(this.size);
       var secondSection = [];
       for (var i = 0; i < arr.length; i++) {
          secondSection.push(arr[i].slice().reverse());
       }
       arr.push(middleRow);
-      this.colourMapping = arr.concat(secondSection.reverse());
+      return arr.concat(secondSection.reverse());
+   };
+
+   /**
+    * @returns {Number[]} e.g [1,1,1,1,0,1,1,1,1,1,1,1];
+    */
+   Crossword.prototype.buildLineArray = function() {
+      var lineArr = [];
+      var firstWordLength = this.getRandomWordLength();
+      for (var j = 0; j<firstWordLength; j++) {
+         lineArr.push(1);
+      }
+      if (firstWordLength !== this.size) {
+         lineArr.push(0);
+      }
+      var secondWordLength = this.size - 1 - firstWordLength;
+      for (var j = 0; j<secondWordLength; j++) {
+         lineArr.push(1);
+      }
+      return lineArr;
+   };
+
+   Crossword.prototype.buildSymmetricalLineArray = function() {
+      var wordLength = this.getRandomWordLength([4,5,6]);
+      var lineArr = [];
+      var halfLength = Math.floor(this.size/2);
+      for (var i=0; i<halfLength; i++) {
+         if (i < wordLength) {
+            lineArr.push(1);
+         } else {
+            lineArr.push(0);
+         }
+      }
+      return lineArr.concat(this.getRandomInt(0,1)).concat(lineArr.slice().reverse());
    };
 
    /**
@@ -82,13 +130,13 @@
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
-   /**
-    * Returns a randomly selected argument.
-    * @returns {*}
-    */
-   Crossword.prototype.getRandomChoice = function(){
-      var choices = Array.prototype.slice.call(arguments, 0);;
+   Crossword.prototype.getRandomWordLength = function(arr){
+      var choices = arr || this.getValidWordLengths();
       return choices[this.getRandomInt(0, choices.length - 1)];
+   };
+
+   Crossword.prototype.getValidWordLengths = function(){
+      return [2,3,4,5,6,7,8];
    };
 
    window.Crossword = Crossword;
