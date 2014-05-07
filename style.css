@@ -7,6 +7,18 @@ td {
    height: 24px;
    width: 24px;
 }
+input {
+   height: 24px;
+   width: 24px;
+   text-transform: uppercase;
+   text-align: center;
+   border: none;
+   font-size: 17px;
+   margin: 0;
+}
 .blank {
    background: black;
+}
+.blank input {
+   visibility: hidden;
 }
