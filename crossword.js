@@ -4,6 +4,7 @@
       this.tableEl = document.querySelector(selector);
       this.trs = this.tableEl.querySelectorAll('tr');
       this.size = this.trs.length;
+      this.validWordLengths = this.getValidWordLengths();
       return this;
    }
 
@@ -14,13 +15,12 @@
    Crossword.prototype.size = null;
 
    /**
-    * The legal lengths answers can be. Has the size added to this.
+    * The legal lengths a word can be.
     * @type {Number[]}
     */
-   Crossword.prototype.wordLengthChoices = [4,5,6,7,8];
+   Crossword.prototype.validWordLengths = null;
 
    Crossword.prototype.initialise = function(){
-      this.wordLengthChoices.push(this.size);
       this.colourMapping = this.merge(this.buildColourMapping(), this.buildColourMapping());
       this.colourBoard();
    };
@@ -38,7 +38,6 @@
          arr[i] = [];
          for (var j =0; j < innerLength; j++) {
             arr[i][j] = [];
-            console.log(i, j);
             if(multiArrayA[i][j] || multiArrayB[j][i]) {
                arr[i][j] = 1;
             } else {
@@ -94,24 +93,24 @@
    Crossword.prototype.buildLineArray = function() {
       var lineArr = [];
       var firstWordLength = this.getRandomWordLength();
-      for (var j = 0; j<firstWordLength; j++) {
+      for (var j = 0; j < firstWordLength; j++) {
          lineArr.push(1);
       }
       if (firstWordLength !== this.size) {
          lineArr.push(0);
       }
       var secondWordLength = this.size - 1 - firstWordLength;
-      for (var j = 0; j<secondWordLength; j++) {
+      for (var j = 0; j < secondWordLength; j++) {
          lineArr.push(1);
       }
       return lineArr;
    };
 
    Crossword.prototype.buildSymmetricalLineArray = function() {
-      var wordLength = this.getRandomWordLength([4,5,6]);
+      var wordLength = this.getRandomWordLength();
       var lineArr = [];
       var halfLength = Math.floor(this.size/2);
-      for (var i=0; i<halfLength; i++) {
+      for (var i = 0; i < halfLength; i++) {
          if (i < wordLength) {
             lineArr.push(1);
          } else {
@@ -126,18 +125,24 @@
     * @param {Number} min
     * @param {Number} max
     */
-   Crossword.prototype.getRandomInt = function(min, max){
+   Crossword.prototype.getRandomInt = function(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
-   Crossword.prototype.getRandomWordLength = function(arr){
-      var choices = arr || this.getValidWordLengths();
+   Crossword.prototype.getRandomWordLength = function(arr) {
+      var choices = arr || this.validWordLengths;
       return choices[this.getRandomInt(0, choices.length - 1)];
    };
 
-   Crossword.prototype.getValidWordLengths = function(){
-      return [2,3,4,5,6,7,8];
+   Crossword.prototype.getValidWordLengths = function() {
+      var arr = []
+      for (var i = Crossword.minimumWordLength - 1; i < (this.size - 3); i++) {
+         arr.push(i);
+      }
+      return arr;
    };
+
+   Crossword.minimumWordLength = 4;
 
    window.Crossword = Crossword;
 
