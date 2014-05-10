@@ -41,9 +41,9 @@ class Crossword {
     * Colours the board black and white using the colourMapping.
     */
    colourBoard() {
-      for (var i = 0; i < this.colourMapping.length; i++) {
+      for (let i = 0; i < this.colourMapping.length; i++) {
          var tds = this.tableEl.querySelectorAll('tr')[i].querySelectorAll('td');
-         for (var j = 0; j < tds.length; j++) {
+         for (let j = 0; j < tds.length; j++) {
             if (!this.colourMapping[i][j]) {
                tds[j].className = 'blank';
             }
@@ -56,24 +56,24 @@ class Crossword {
     * Ensures rotational symmetry is adhered to.
     */
    buildColourMapping() {
-      var arr = [];
+      var topHalf = [];
       var startWhite = this.getRandomInt(0,1);
       var i = startWhite;
       var len = Math.floor(this.size/2) + i;
       for (i; i < len; i++) {
          if (i % 2 == 0) {
-            arr.push(new Array(this.size))
+            topHalf.push(new Array(this.size))
          } else {
-            arr.push(this.buildLineArray());
+            topHalf.push(this.buildLineArray());
          }
       }
       var middleRow = startWhite ? this.buildSymmetricalLineArray() : new Array(this.size);
       var secondSection = [];
-      for (var i = 0; i < arr.length; i++) {
-         secondSection.push(arr[i].slice().reverse());
+      for (let row of topHalf) {
+         secondSection.push(row.slice().reverse());
       }
-      arr.push(middleRow);
-      return arr.concat(secondSection.reverse());
+      topHalf.push(middleRow);
+      return topHalf.concat(secondSection.reverse());
    };
 
    /**
@@ -82,14 +82,15 @@ class Crossword {
    buildLineArray() {
       var lineArr = [];
       var firstWordLength = this.getRandomWordLength();
-      for (var j = 0; j < firstWordLength; j++) {
+
+      for (let i = 0; i < firstWordLength; i++) {
          lineArr.push(1);
       }
       if (firstWordLength !== this.size) {
          lineArr.push(0);
       }
       var secondWordLength = this.size - 1 - firstWordLength;
-      for (var j = 0; j < secondWordLength; j++) {
+      for (let i = 0; i < secondWordLength; i++) {
          lineArr.push(1);
       }
       return lineArr;
@@ -99,7 +100,7 @@ class Crossword {
       var wordLength = this.getRandomWordLength();
       var lineArr = [];
       var halfLength = Math.floor(this.size/2);
-      for (var i = 0; i < halfLength; i++) {
+      for (let i = 0; i < halfLength; i++) {
          if (i < wordLength) {
             lineArr.push(1);
          } else {
