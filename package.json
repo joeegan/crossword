@@ -1,0 +1,21 @@
+{
+  "name": "crossword",
+  "version": "0.0.0",
+  "description": "Generates symmetrical crosswords",
+  "main": "crossword.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joeegan/crossword.git"
+  },
+  "author": "Joe Egan",
+  "bugs": {
+    "url": "https://github.com/joeegan/crossword/issues"
+  },
+  "homepage": "https://github.com/joeegan/crossword",
+  "devDependencies": {
+    "grunt": "^0.4.4",
+    "grunt-contrib-watch": "^0.6.1",
+    "traceur": "0.0.41",
+    "shelljs": "^0.3.0"
+  }
+}

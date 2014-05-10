@@ -1,29 +1,18 @@
-(function(){
+class Crossword {
 
-   function Crossword(selector){
+   constructor(selector) {
       this.tableEl = document.querySelector(selector);
       this.trs = this.tableEl.querySelectorAll('tr');
       this.size = this.trs.length;
+      this.minimumWordLength = 4;
       this.validWordLengths = this.getValidWordLengths();
       return this;
    }
 
-   /**
-    * The length of the sides of the crossword.
-    * @type {Number}
-    */
-   Crossword.prototype.size = null;
-
-   /**
-    * The legal lengths a word can be.
-    * @type {Number[]}
-    */
-   Crossword.prototype.validWordLengths = null;
-
-   Crossword.prototype.initialise = function(){
+   initialise() {
       this.colourMapping = this.merge(this.buildColourMapping(), this.buildColourMapping());
       this.colourBoard();
-   };
+   }
 
    /**
     * Returns a multi array where multiArrayB has been turned on it's side and merged into the multiArrayA.
@@ -31,7 +20,7 @@
     * @param {[[]]} multiArrayB
     * @returns {{[[]]}}
     */
-   Crossword.prototype.merge = function(multiArrayA, multiArrayB) {
+   merge(multiArrayA, multiArrayB) {
       var innerLength = multiArrayA.length;
       var arr = new Array(innerLength);
       for (var i = 0; i < innerLength; i++) {
@@ -51,7 +40,7 @@
    /**
     * Colours the board black and white using the colourMapping.
     */
-   Crossword.prototype.colourBoard = function() {
+   colourBoard() {
       for (var i = 0; i < this.colourMapping.length; i++) {
          var tds = this.tableEl.querySelectorAll('tr')[i].querySelectorAll('td');
          for (var j = 0; j < tds.length; j++) {
@@ -66,7 +55,7 @@
     * Decides which word lengths to use on the board.
     * Ensures rotational symmetry is adhered to.
     */
-   Crossword.prototype.buildColourMapping = function(){
+   buildColourMapping() {
       var arr = [];
       var startWhite = this.getRandomInt(0,1);
       var i = startWhite;
@@ -90,7 +79,7 @@
    /**
     * @returns {Number[]} e.g [1,1,1,1,0,1,1,1,1,1,1,1];
     */
-   Crossword.prototype.buildLineArray = function() {
+   buildLineArray() {
       var lineArr = [];
       var firstWordLength = this.getRandomWordLength();
       for (var j = 0; j < firstWordLength; j++) {
@@ -106,7 +95,7 @@
       return lineArr;
    };
 
-   Crossword.prototype.buildSymmetricalLineArray = function() {
+   buildSymmetricalLineArray() {
       var wordLength = this.getRandomWordLength();
       var lineArr = [];
       var halfLength = Math.floor(this.size/2);
@@ -125,25 +114,25 @@
     * @param {Number} min
     * @param {Number} max
     */
-   Crossword.prototype.getRandomInt = function(min, max) {
+   getRandomInt (min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
-   Crossword.prototype.getRandomWordLength = function(arr) {
+   getRandomWordLength(arr) {
       var choices = arr || this.validWordLengths;
       return choices[this.getRandomInt(0, choices.length - 1)];
    };
 
-   Crossword.prototype.getValidWordLengths = function() {
-      var arr = []
-      for (var i = Crossword.minimumWordLength - 1; i < (this.size - 3); i++) {
+   getValidWordLengths() {
+      var arr = [];
+      for (var i = this.minimumWordLength - 1; i < (this.size - 3); i++) {
          arr.push(i);
       }
       return arr;
    };
 
-   Crossword.minimumWordLength = 4;
+}
 
-   window.Crossword = Crossword;
+var crossword = new Crossword('table');
+crossword.initialise();
 
-})();

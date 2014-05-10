@@ -1,2 +1,4 @@
 notes.txt
 .idea
+node_modules
+/dist
