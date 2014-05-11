@@ -68,10 +68,7 @@ class Crossword {
          }
       }
       var middleRow = startWhite ? this.buildSymmetricalLineArray() : new Array(this.size);
-      var secondSection = [];
-      for (let row of topHalf) {
-         secondSection.push(row.slice().reverse());
-      }
+      var secondSection = [for (row of topHalf) row.slice().reverse()];
       topHalf.push(middleRow);
       return topHalf.concat(secondSection.reverse());
    };
@@ -119,9 +116,8 @@ class Crossword {
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
-   getRandomWordLength(arr) {
-      var choices = arr || this.validWordLengths;
-      return choices[this.getRandomInt(0, choices.length - 1)];
+   getRandomWordLength(arr = this.validWordLengths) {
+      return arr[this.getRandomInt(0, arr.length - 1)];
    };
 
    getValidWordLengths() {
