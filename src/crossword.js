@@ -1,6 +1,6 @@
 class Crossword {
 
-   constructor(selector) {
+   constructor(selector:String) {
       this.tableEl = document.querySelector(selector);
       this.trs = this.tableEl.querySelectorAll('tr');
       this.size = this.trs.length;
@@ -16,11 +16,9 @@ class Crossword {
 
    /**
     * Returns a multi array where multiArrayB has been turned on it's side and merged into the multiArrayA.
-    * @param {[[]]} multiArrayA
-    * @param {[[]]} multiArrayB
     * @returns {{[[]]}}
     */
-   merge(multiArrayA, multiArrayB) {
+   merge(multiArrayA:Array, multiArrayB:Array) {
       var innerLength = multiArrayA.length;
       var arr = new Array(innerLength);
       for (var i = 0; i < innerLength; i++) {
@@ -80,9 +78,8 @@ class Crossword {
       var lineArr = [];
       var firstWordLength = this.getRandomWordLength();
 
-      for (let i = 0; i < firstWordLength; i++) {
-         lineArr.push(1);
-      }
+      var lineArr = Array.apply(null, Array(firstWordLength)).map( s => 1 );
+
       if (firstWordLength !== this.size) {
          lineArr.push(0);
       }
@@ -109,10 +106,8 @@ class Crossword {
 
    /**
     * Gets an random whole number between min and max.
-    * @param {Number} min
-    * @param {Number} max
     */
-   getRandomInt (min, max) {
+   getRandomInt (min:Number = 0, max:Number) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
@@ -130,6 +125,4 @@ class Crossword {
 
 }
 
-var crossword = new Crossword('table');
-crossword.initialise();
-
+var crossword = new Crossword('table').initialise();
