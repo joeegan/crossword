@@ -35,34 +35,63 @@ class Crossword {
       return Math.floor(Math.random() * (max - min + 1)) + min;
    };
 
+   /**
+    * e.g. ([1,2], 2)
+    */
+   getRandom(arr:Array, avoider:Number) {
+      var arry = arr;
+      if (typeof avoider == 'number') {
+         arry = arr.filter(function(item){
+            return Math.abs(arr.indexOf(item) - arr.indexOf(avoider)) > 1;
+         });
+      }
+      return arr[this.getRandomInt(0,arr.length-1)];
+   };
+
    processInitialGrid() {
-      var originalGrid = this.buildInitialGrid();
-      var grid = originalGrid.slice();
+      var originalGrid = this.buildInitialGrid(1);
+      this.grid = originalGrid.slice();
       var lightRowWasFirst = (originalGrid[0].toString() == this.lightRow.toString());
       var rowStartDarkWasFirst = (originalGrid[0].toString() == this.rowStartDark.toString());
       var rowStartLightWasFirst = (originalGrid[0].toString() == this.rowStartLight.toString());
       var lightRowWasSecond = (originalGrid[1].toString() == this.lightRow.toString());
       var rowStartDarkWasSecond = (originalGrid[1].toString() == this.rowStartDark.toString());
       var rowStartLightWasSecond = (originalGrid[1].toString() == this.rowStartLight.toString());
-
-      // numbers should be random degenerates, but for now...
       if (rowStartLightWasSecond) {
-         grid[0][7] = 0;
-         grid[this.size-1][(this.size-1)-7] = 0; // symmetry
+         this.removeWhites(0, [0,3,5,7,9,12]);
+         this.removeWhites(1, [2,4,8,10]);
+         this.removeWhites(2, [5,7,9,11]);
+         this.removeWhites(4, [0,3,5,7,9,12]);
+         this.buildCentreRow(6, [1,4,6,11]);
+      // TODO, currently forcing rowStartLightWasSecond...
       } else if (rowStartDarkWasSecond) {
-         grid[0][6] = 0;
-         grid[this.size-1][(this.size-1)-6] = 0;
+         this.removeWhites(0, [4,6,8]);
       } else if (rowStartLightWasFirst) {
-         grid[0][6] = 0;
-         grid[this.size-1][(this.size-1)-6] = 0;
+         this.removeWhites(0, [2,4,6,8,10]);
       } else if (rowStartDarkWasFirst) {
-         grid[1][6] = 0;
-         grid[this.size-2][(this.size-1)-6] = 0;
+         this.removeWhites(0, [4,6,8]);
       }
-      return grid;
+      return this.grid;
    }
 
-   buildInitialGrid() {
+   removeWhites(rowIndex:Number, arr:Array, avoider:Number) {
+      var rand = this.getRandom(arr, avoider);
+      console.log('rand', rand, 'range: '+arr);
+      this.grid[rowIndex][rand] = 0;
+      this.grid[this.size-(1+rowIndex)][(this.size-1)-rand] = 0; // symmetry
+      if (typeof avoider !== "number") {
+         this.removeWhites(rowIndex, arr, rand);
+      }
+   };
+
+   buildCentreRow(rowIndex:Number, arr:Array){
+      var rand = this.getRandom(arr);
+      console.log('row', rowIndex, 'rand', rand, 'range: '+arr);
+      this.grid[rowIndex][rand] = 0;
+      this.grid[rowIndex][(this.size-1)-rand] = 0; // symmetry
+   };
+
+   buildInitialGrid(choiceIndex) {
       var arr = [];
       this.lightRow = new String(new Array(13)).split(',').map(function(){ return 1 });
       this.rowStartLight = this.lightRow.map(function(num, i) { return +(i % 2 == 0) });
@@ -77,10 +106,18 @@ class Crossword {
          secondChoiceIndex = this.getRandomInt(0, choices.length-1);
          secondChoice = choices.splice(secondChoiceIndex, 1)[0];
       }
+
+      // for development force rowStartLightWasSecond
+      if (choiceIndex == 1) {
+         firstChoice = this.lightRow;
+         secondChoice = this.rowStartLight;
+      }
+
       while (arr.length < this.size) {
          arr.push(firstChoice.slice());
          arr.push(secondChoice.slice());
       }
+
       return arr.splice(0, this.size);
    }
 }
